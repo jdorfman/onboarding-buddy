@@ -25,6 +25,7 @@ export const ChatWindow: React.FC = () => {
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -172,6 +173,48 @@ export const ChatWindow: React.FC = () => {
     }
   };
 
+  const exportChatAsMarkdown = () => {
+    let markdown = '# Onboarding Buddy Chat Session\n\n';
+    markdown += `Session ID: ${currentSessionId}\n\n`;
+    markdown += '---\n\n';
+
+    for (let i = 0; i < messages.length; i += 2) {
+      const userMsg = messages[i];
+      const assistantMsg = messages[i + 1];
+
+      if (userMsg && userMsg.role === 'user') {
+        markdown += `## Question\n\n${userMsg.content}\n\n`;
+      }
+
+      if (assistantMsg && assistantMsg.role === 'assistant') {
+        markdown += `## Answer\n\n${assistantMsg.content}\n\n`;
+        
+        if (assistantMsg.context) {
+          markdown += `### Context Used\n\n`;
+          assistantMsg.context.forEach((ctx: any) => {
+            markdown += `- **${ctx.file}** (lines ${ctx.start}-${ctx.end})\n`;
+          });
+          markdown += '\n';
+        }
+        
+        markdown += '---\n\n';
+      }
+    }
+
+    return markdown;
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      const markdown = exportChatAsMarkdown();
+      await navigator.clipboard.writeText(markdown);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 3000);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+    }
+  };
+
   return (
     <div className="container-fluid h-100">
       <div className="row h-100">
@@ -234,6 +277,33 @@ export const ChatWindow: React.FC = () => {
         </div>
 
         <div className="col-md-9 p-4 d-flex flex-column">
+          {messages.length > 0 && (
+            <div className="d-flex justify-content-end mb-3">
+              <div className="btn-group">
+                <button 
+                  className={`btn btn-sm ${isCopied ? 'btn-success' : 'btn-outline-secondary'}`}
+                  onClick={copyToClipboard}
+                  title="Copy page as Markdown"
+                  disabled={isCopied}
+                >
+                  {isCopied ? (
+                    <>
+                      <span className="me-1">✓</span>
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-clipboard me-1" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+                      </svg>
+                      Copy page
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
           {messages.length === 0 ? (
             <div className="text-center text-muted mt-5">
               <h4>Welcome!</h4>
