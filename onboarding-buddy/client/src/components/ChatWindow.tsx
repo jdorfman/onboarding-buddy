@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Message } from '../types';
 import { QuestionInput } from './QuestionInput';
 import { ResponseDisplay } from './ResponseDisplay';
 import { questionAPI } from '../services/api';
 
 export const ChatWindow: React.FC = () => {
+  const navigate = useNavigate();
+  const { chatId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(() => `session-${Date.now()}-${Math.random()}`);
@@ -130,7 +133,12 @@ export const ChatWindow: React.FC = () => {
                 <button
                   key={pair.answer.id}
                   className={`list-group-item list-group-item-action ${selectedMessage?.id === pair.answer.id ? 'active' : ''}`}
-                  onClick={() => setSelectedMessage(pair.answer)}
+                  onClick={() => {
+                    setSelectedMessage(pair.answer);
+                    if (pair.answer.conversationId) {
+                      navigate(`/chat/${pair.answer.conversationId}`);
+                    }
+                  }}
                 >
                   <h6 className="mb-1 text-truncate">{pair.question.content}</h6>
                   <small className="text-truncate d-block">{pair.answer.content.slice(0, 60)}...</small>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -6,6 +7,8 @@ import { SetupGuide } from '../types';
 import { guidesAPI } from '../services/api';
 
 export const SetupGuideViewer: React.FC = () => {
+  const navigate = useNavigate();
+  const { guideId } = useParams();
   const [guides, setGuides] = useState<SetupGuide[]>([]);
   const [selectedGuide, setSelectedGuide] = useState<SetupGuide | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +81,10 @@ export const SetupGuideViewer: React.FC = () => {
               <button
                 key={guide.id}
                 className={`list-group-item list-group-item-action ${selectedGuide?.id === guide.id ? 'active' : ''}`}
-                onClick={() => setSelectedGuide(guide)}
+                onClick={() => {
+                  setSelectedGuide(guide);
+                  navigate(`/guides/${guide.id}`);
+                }}
               >
                 <div className="d-flex w-100 justify-content-between">
                   <h6 className="mb-1">{guide.title}</h6>
