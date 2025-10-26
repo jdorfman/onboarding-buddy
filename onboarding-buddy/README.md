@@ -155,6 +155,25 @@ The application uses SQLite with the following tables:
 - **conversations**: Session history for context-aware responses
 - **feedback**: User feedback for continuous improvement
 
+### Useful Database Queries
+
+```bash
+# View all feedback
+sqlite3 server/data/onboarding.db "SELECT * FROM feedback"
+
+# Count helpful vs not helpful feedback
+sqlite3 server/data/onboarding.db "SELECT helpful, COUNT(*) as count FROM feedback GROUP BY helpful"
+
+# View most used Q&A pairs
+sqlite3 server/data/onboarding.db "SELECT question, usage_count FROM qa_pairs ORDER BY usage_count DESC LIMIT 10"
+
+# View recent conversations with feedback
+sqlite3 server/data/onboarding.db "SELECT c.question, c.created_at, f.helpful FROM conversations c LEFT JOIN feedback f ON c.id = f.conversation_id ORDER BY c.created_at DESC LIMIT 10"
+
+# View all setup guides
+sqlite3 server/data/onboarding.db "SELECT topic, difficulty, estimated_minutes FROM setup_guides ORDER BY created_at DESC"
+```
+
 ## Usage
 
 ### Asking Questions
