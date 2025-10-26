@@ -61,7 +61,7 @@ export const ChatWindow: React.FC = () => {
         <div className="col-md-8 offset-md-2 h-100 d-flex flex-column py-3">
           <div className="card shadow-sm flex-grow-1 d-flex flex-column">
             <div className="card-header bg-primary text-white">
-              <h5 className="mb-0">🤖 Onboarding Buddy</h5>
+              <h5 className="mb-0">Onboarding Buddy</h5>
               <small>Ask me anything about the codebase</small>
             </div>
             

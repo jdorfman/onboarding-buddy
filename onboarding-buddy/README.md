@@ -36,16 +36,8 @@ A comprehensive onboarding assistant powered by Amp SDK that helps new developer
 
 ### 1. Install Dependencies
 
-**Server:**
 ```bash
-cd server
-npm install
-```
-
-**Client:**
-```bash
-cd client
-npm install
+npm run install:all
 ```
 
 ### 2. Configure Environment
@@ -67,23 +59,14 @@ AMP_API_KEY=your_amp_api_key_here
 
 ## Development
 
-### Start the Backend Server
+Start both server and client:
 
 ```bash
-cd server
 npm run dev
 ```
 
-Server will run on http://localhost:3001
-
-### Start the Frontend Client
-
-```bash
-cd client
-npm run dev
-```
-
-Client will run on http://localhost:3000
+- Server will run on http://localhost:3001
+- Client will run on http://localhost:3000
 
 ## Production Build
 

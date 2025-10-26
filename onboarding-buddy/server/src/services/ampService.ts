@@ -1,20 +1,17 @@
-import { Agent } from '@sourcegraph/amp-sdk';
+import { execute, createUserMessage } from '@sourcegraph/amp-sdk';
 
 export class AmpService {
-  private agent: Agent;
+  private systemPrompt: string;
 
   constructor() {
-    this.agent = new Agent({
-      name: 'Onboarding Buddy',
-      instructions: `You are an expert onboarding assistant helping new developers understand the codebase.
+    this.systemPrompt = `You are an expert onboarding assistant helping new developers understand the codebase.
 Your responsibilities:
 - Answer questions about the codebase architecture and components
 - Generate step-by-step setup guides
 - Explain code patterns and best practices
 - Provide context-aware responses based on the actual codebase
 
-Always be helpful, concise, and provide code examples when relevant.`
-    });
+Always be helpful, concise, and provide code examples when relevant.`;
   }
 
   async answerQuestion(question: string, context: any[] = []): Promise<string> {
@@ -22,8 +19,29 @@ Always be helpful, concise, and provide code examples when relevant.`
       ? `\n\nRelevant context from knowledge base:\n${context.map(c => `Q: ${c.question}\nA: ${c.answer}`).join('\n\n')}`
       : '';
 
-    const response = await this.agent.chat(`${question}${contextText}`);
+    const response = await this.executePrompt(`${question}${contextText}`);
     return response;
+  }
+
+  private async executePrompt(prompt: string): Promise<string> {
+    let result = '';
+    
+    for await (const message of execute({
+      prompt: `${this.systemPrompt}\n\n${prompt}`,
+      options: {
+        dangerouslyAllowAll: true
+      }
+    })) {
+      if (message.type === 'assistant') {
+        for (const content of message.message.content) {
+          if (content.type === 'text' && content.text) {
+            result += content.text;
+          }
+        }
+      }
+    }
+    
+    return result;
   }
 
   async generateSetupGuide(topic: string, codebaseContext?: string): Promise<{
@@ -48,7 +66,7 @@ Provide the response in the following JSON format:
   "estimatedTime": "X minutes"
 }`;
 
-    const response = await this.agent.chat(prompt);
+    const response = await this.executePrompt(prompt);
     
     try {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -102,7 +120,7 @@ Return the response in JSON format:
   ]
 }`;
 
-    const response = await this.agent.chat(prompt);
+    const response = await this.executePrompt(prompt);
     
     try {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -124,7 +142,7 @@ Return the response in JSON format:
   }
 
   async searchCodebase(query: string): Promise<string> {
-    const response = await this.agent.chat(`Search the codebase for: ${query}`);
+    const response = await this.executePrompt(`Search the codebase for: ${query}`);
     return response;
   }
 }

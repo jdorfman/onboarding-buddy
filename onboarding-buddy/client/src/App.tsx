@@ -13,7 +13,7 @@ function App() {
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
           <span className="navbar-brand">
-            <span className="fs-4">🤖</span> Onboarding Buddy
+            Onboarding Buddy
           </span>
           <ul className="navbar-nav">
             <li className="nav-item">
@@ -21,7 +21,7 @@ function App() {
                 className={`nav-link btn ${activeTab === 'chat' ? 'active' : ''}`}
                 onClick={() => setActiveTab('chat')}
               >
-                💬 Chat
+                Chat
               </button>
             </li>
             <li className="nav-item">
@@ -29,7 +29,7 @@ function App() {
                 className={`nav-link btn ${activeTab === 'guides' ? 'active' : ''}`}
                 onClick={() => setActiveTab('guides')}
               >
-                📚 Setup Guides
+                Setup Guides
               </button>
             </li>
             <li className="nav-item">
@@ -37,7 +37,7 @@ function App() {
                 className={`nav-link btn ${activeTab === 'architecture' ? 'active' : ''}`}
                 onClick={() => setActiveTab('architecture')}
               >
-                🏗️ Architecture
+                Architecture
               </button>
             </li>
           </ul>
