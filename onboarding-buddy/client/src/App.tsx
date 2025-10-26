@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatWindow } from './components/ChatWindow';
 import { SetupGuideViewer } from './components/SetupGuideViewer';
 import { ArchitectureExplorer } from './components/ArchitectureExplorer';
@@ -6,7 +6,24 @@ import { ArchitectureExplorer } from './components/ArchitectureExplorer';
 type Tab = 'chat' | 'guides' | 'architecture';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('chat');
+  const getInitialTab = (): Tab => {
+    const hash = window.location.hash.slice(1) as Tab;
+    return ['chat', 'guides', 'architecture'].includes(hash) ? hash : 'chat';
+  };
+
+  const [activeTab, setActiveTab] = useState<Tab>(getInitialTab);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1) as Tab;
+      if (['chat', 'guides', 'architecture'].includes(hash)) {
+        setActiveTab(hash);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   return (
     <div className="d-flex flex-column vh-100">
@@ -17,28 +34,28 @@ function App() {
           </span>
           <ul className="navbar-nav">
             <li className="nav-item">
-              <button
-                className={`nav-link btn ${activeTab === 'chat' ? 'active' : ''}`}
-                onClick={() => setActiveTab('chat')}
+              <a
+                href="#chat"
+                className={`nav-link ${activeTab === 'chat' ? 'active' : ''}`}
               >
                 Chat
-              </button>
+              </a>
             </li>
             <li className="nav-item">
-              <button
-                className={`nav-link btn ${activeTab === 'guides' ? 'active' : ''}`}
-                onClick={() => setActiveTab('guides')}
+              <a
+                href="#guides"
+                className={`nav-link ${activeTab === 'guides' ? 'active' : ''}`}
               >
                 Setup Guides
-              </button>
+              </a>
             </li>
             <li className="nav-item">
-              <button
-                className={`nav-link btn ${activeTab === 'architecture' ? 'active' : ''}`}
-                onClick={() => setActiveTab('architecture')}
+              <a
+                href="#architecture"
+                className={`nav-link ${activeTab === 'architecture' ? 'active' : ''}`}
               >
                 Architecture
-              </button>
+              </a>
             </li>
           </ul>
         </div>
