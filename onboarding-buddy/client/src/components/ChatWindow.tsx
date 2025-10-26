@@ -61,8 +61,7 @@ export const ChatWindow: React.FC = () => {
         <div className="col-md-8 offset-md-2 h-100 d-flex flex-column py-3">
           <div className="card shadow-sm flex-grow-1 d-flex flex-column">
             <div className="card-header bg-primary text-white">
-              <h5 className="mb-0">Onboarding Buddy</h5>
-              <small>Ask me anything about the codebase</small>
+              <h5 className="mb-0">Ask me anything about the codebase</h5>
             </div>
             
             <div className="card-body overflow-auto flex-grow-1">
@@ -71,10 +70,38 @@ export const ChatWindow: React.FC = () => {
                   <h4>Welcome! 👋</h4>
                   <p>I'm your onboarding buddy. Ask me questions about:</p>
                   <ul className="list-unstyled">
-                    <li>• How to set up the development environment</li>
-                    <li>• Architecture and component structure</li>
-                    <li>• Code patterns and best practices</li>
-                    <li>• Where to find specific functionality</li>
+                    <li>
+                      <button 
+                        className="btn btn-link text-decoration-none p-0"
+                        onClick={() => handleQuestion('How to set up the development environment')}
+                      >
+                        • How to set up the development environment
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="btn btn-link text-decoration-none p-0"
+                        onClick={() => handleQuestion('Architecture and component structure')}
+                      >
+                        • Architecture and component structure
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="btn btn-link text-decoration-none p-0"
+                        onClick={() => handleQuestion('Code patterns and best practices')}
+                      >
+                        • Code patterns and best practices
+                      </button>
+                    </li>
+                    <li>
+                      <button 
+                        className="btn btn-link text-decoration-none p-0"
+                        onClick={() => handleQuestion('Where to find specific functionality')}
+                      >
+                        • Where to find specific functionality
+                      </button>
+                    </li>
                   </ul>
                 </div>
               )}
