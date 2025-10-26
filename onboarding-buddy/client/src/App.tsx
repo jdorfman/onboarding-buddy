@@ -27,11 +27,11 @@ function App() {
 
   return (
     <div className="d-flex flex-column vh-100">
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div className="container-fluid">
-          <span className="navbar-brand">
+          <a href="#chat" className="navbar-brand">
             Onboarding Buddy
-          </span>
+          </a>
           <ul className="navbar-nav">
             <li className="nav-item">
               <a
@@ -61,7 +61,7 @@ function App() {
         </div>
       </nav>
 
-      <div className="flex-grow-1 overflow-hidden">
+      <div className="flex-grow-1">
         {activeTab === 'chat' && <ChatWindow />}
         {activeTab === 'guides' && <SetupGuideViewer />}
         {activeTab === 'architecture' && <ArchitectureExplorer />}

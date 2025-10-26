@@ -100,7 +100,7 @@ export const SetupGuideViewer: React.FC = () => {
                 <span className={`badge bg-${getDifficultyBadge(selectedGuide.difficulty)}`}>
                   {selectedGuide.difficulty}
                 </span>
-                <span className="badge bg-info">⏱️ {selectedGuide.estimatedTime}</span>
+                <span className="badge bg-info">{selectedGuide.estimatedTime}</span>
               </div>
               
               {selectedGuide.prerequisites.length > 0 && (

@@ -62,7 +62,7 @@ export const ArchitectureExplorer: React.FC = () => {
                 disabled={isLoading}
               />
               <button className="btn btn-primary" type="submit" disabled={isLoading}>
-                {isLoading ? '...' : '🔍'}
+                {isLoading ? '...' : 'Search'}
               </button>
             </div>
           </form>
@@ -138,7 +138,7 @@ export const ArchitectureExplorer: React.FC = () => {
             </>
           ) : (
             <div className="text-center text-muted mt-5">
-              <h4>🏗️ Architecture Explorer</h4>
+              <h4>Architecture Explorer</h4>
               <p>Select a component from the sidebar or search for one to analyze</p>
             </div>
           )}
