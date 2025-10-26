@@ -46,6 +46,40 @@ export class DatabaseService {
     stmt.run(id);
   }
 
+  getAllChatSessions(): any[] {
+    const stmt = this.db.prepare(`
+      SELECT cs.*, 
+        (SELECT user_question FROM conversations WHERE session_id = cs.id ORDER BY created_at ASC LIMIT 1) as first_question,
+        (SELECT COUNT(*) FROM conversations WHERE session_id = cs.id) as message_count
+      FROM chat_sessions cs
+      ORDER BY cs.updated_at DESC
+    `);
+    return stmt.all();
+  }
+
+  getChatSession(sessionId: string): any {
+    const stmt = this.db.prepare('SELECT * FROM chat_sessions WHERE id = ?');
+    return stmt.get(sessionId);
+  }
+
+  createChatSession(sessionId: string): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO chat_sessions (id)
+      VALUES (?)
+      ON CONFLICT(id) DO NOTHING
+    `);
+    stmt.run(sessionId);
+  }
+
+  updateChatSessionTitle(sessionId: string, title: string): void {
+    const stmt = this.db.prepare(`
+      UPDATE chat_sessions 
+      SET title = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+    stmt.run(title, sessionId);
+  }
+
   getSessionHistory(sessionId: string, limit: number = 10): any[] {
     const stmt = this.db.prepare(`
       SELECT * FROM conversations
@@ -57,11 +91,23 @@ export class DatabaseService {
   }
 
   insertConversation(sessionId: string, userQuestion: string, agentResponse: string, contextUsed: any[]): number {
+    this.createChatSession(sessionId);
+    
     const stmt = this.db.prepare(`
       INSERT INTO conversations (session_id, user_question, agent_response, context_used)
       VALUES (?, ?, ?, ?)
     `);
     const result = stmt.run(sessionId, userQuestion, agentResponse, JSON.stringify(contextUsed));
+    
+    const updateStmt = this.db.prepare('UPDATE chat_sessions SET updated_at = CURRENT_TIMESTAMP WHERE id = ?');
+    updateStmt.run(sessionId);
+    
+    const conversations = this.getSessionHistory(sessionId, 1);
+    if (conversations.length === 1) {
+      const title = userQuestion.slice(0, 60);
+      this.updateChatSessionTitle(sessionId, title);
+    }
+    
     return result.lastInsertRowid as number;
   }
 

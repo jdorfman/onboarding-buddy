@@ -5,12 +5,24 @@ import { QuestionInput } from './QuestionInput';
 import { ResponseDisplay } from './ResponseDisplay';
 import { questionAPI } from '../services/api';
 
+interface ChatSession {
+  id: string;
+  title: string;
+  first_question: string;
+  message_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export const ChatWindow: React.FC = () => {
   const navigate = useNavigate();
   const { chatId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId] = useState(() => `session-${Date.now()}-${Math.random()}`);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string>(() => 
+    chatId || `session-${Date.now()}-${Math.random()}`
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -22,6 +34,70 @@ export const ChatWindow: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    loadChatSessions();
+  }, []);
+
+  useEffect(() => {
+    if (chatId && chatId !== currentSessionId) {
+      loadChat(chatId);
+      setCurrentSessionId(chatId);
+    }
+  }, [chatId]);
+
+  const loadChatSessions = async () => {
+    try {
+      const response = await questionAPI.getAllChats();
+      setChatSessions(response.data);
+    } catch (error) {
+      console.error('Failed to load chat sessions:', error);
+    }
+  };
+
+  const loadChat = async (sessionId: string) => {
+    try {
+      const response = await questionAPI.getChat(sessionId);
+      const loadedMessages: Message[] = response.data.messages.map((msg: any) => ({
+        id: `msg-${msg.id}`,
+        role: msg.user_question ? 'user' : 'assistant',
+        content: msg.user_question || msg.agent_response,
+        timestamp: new Date(msg.created_at),
+        context: msg.context_used ? JSON.parse(msg.context_used) : undefined
+      }));
+      
+      const formattedMessages: Message[] = [];
+      response.data.messages.forEach((msg: any) => {
+        formattedMessages.push({
+          id: `msg-${msg.id}-q`,
+          role: 'user',
+          content: msg.user_question,
+          timestamp: new Date(msg.created_at)
+        });
+        formattedMessages.push({
+          id: `msg-${msg.id}-a`,
+          role: 'assistant',
+          content: msg.agent_response,
+          timestamp: new Date(msg.created_at),
+          context: msg.context_used ? JSON.parse(msg.context_used) : undefined
+        });
+      });
+      
+      setMessages(formattedMessages);
+      setSelectedMessage(null);
+    } catch (error) {
+      console.error('Failed to load chat:', error);
+    }
+  };
+
+  const createNewChat = () => {
+    const newSessionId = `session-${Date.now()}-${Math.random()}`;
+    setCurrentSessionId(newSessionId);
+    setMessages([]);
+    setSelectedMessage(null);
+    setSearchTerm('');
+    navigate('/');
+  };
 
   const filteredMessages = useMemo(() => {
     if (!searchTerm.trim()) return messages;
@@ -68,7 +144,7 @@ export const ChatWindow: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await questionAPI.ask(question, sessionId);
+      const response = await questionAPI.ask(question, currentSessionId);
       const assistantMessage: Message = {
         id: `msg-${Date.now()}-response`,
         role: 'assistant',
@@ -80,6 +156,8 @@ export const ChatWindow: React.FC = () => {
       };
       setMessages(prev => [...prev, assistantMessage]);
       setSelectedMessage(assistantMessage);
+      
+      await loadChatSessions();
     } catch (error) {
       console.error('Failed to get answer:', error);
       const errorMessage: Message = {
@@ -98,7 +176,16 @@ export const ChatWindow: React.FC = () => {
     <div className="container-fluid h-100">
       <div className="row h-100">
         <div className="col-md-3 border-end p-3 d-flex flex-column">
-          <h5>Conversation History</h5>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="mb-0">Chats</h5>
+            <button 
+              className="btn btn-primary btn-sm" 
+              onClick={createNewChat}
+              title="New Chat"
+            >
+              +
+            </button>
+          </div>
           
           <form onSubmit={(e) => e.preventDefault()} className="mb-3">
             <div className="input-group input-group-sm">
@@ -122,26 +209,24 @@ export const ChatWindow: React.FC = () => {
           </form>
 
           <div className="overflow-auto flex-grow-1">
-            {displayedPairs.length === 0 && searchTerm && (
-              <p className="text-muted small">No results found</p>
-            )}
-            {displayedPairs.length === 0 && !searchTerm && (
-              <p className="text-muted small">No conversation history yet</p>
+            {chatSessions.length === 0 && (
+              <p className="text-muted small">No chats yet</p>
             )}
             <div className="list-group">
-              {displayedPairs.map((pair) => (
+              {chatSessions.map((session) => (
                 <button
-                  key={pair.answer.id}
-                  className={`list-group-item list-group-item-action ${selectedMessage?.id === pair.answer.id ? 'active' : ''}`}
+                  key={session.id}
+                  className={`list-group-item list-group-item-action ${currentSessionId === session.id ? 'active' : ''}`}
                   onClick={() => {
-                    setSelectedMessage(pair.answer);
-                    if (pair.answer.conversationId) {
-                      navigate(`/chat/${pair.answer.conversationId}`);
-                    }
+                    navigate(`/chat/${session.id}`);
                   }}
                 >
-                  <h6 className="mb-1 text-truncate">{pair.question.content}</h6>
-                  <small className="text-truncate d-block">{pair.answer.content.slice(0, 60)}...</small>
+                  <h6 className="mb-1 text-truncate">
+                    {session.title || session.first_question || 'New Chat'}
+                  </h6>
+                  <small className="text-truncate d-block">
+                    {session.message_count} message{session.message_count !== 1 ? 's' : ''}
+                  </small>
                 </button>
               ))}
             </div>

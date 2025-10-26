@@ -40,6 +40,14 @@ CREATE TABLE IF NOT EXISTS architecture_docs (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Chat Sessions
+CREATE TABLE IF NOT EXISTS chat_sessions (
+  id TEXT PRIMARY KEY,
+  title TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Conversation History (for context)
 CREATE TABLE IF NOT EXISTS conversations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,7 +55,8 @@ CREATE TABLE IF NOT EXISTS conversations (
   user_question TEXT NOT NULL,
   agent_response TEXT NOT NULL,
   context_used TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (session_id) REFERENCES chat_sessions(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_conv_session ON conversations(session_id);

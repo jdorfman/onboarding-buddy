@@ -78,4 +78,29 @@ router.post('/feedback', async (req, res) => {
   }
 });
 
+router.get('/chats', async (req, res) => {
+  try {
+    const sessions = db.getAllChatSessions();
+    res.json(sessions);
+  } catch (error) {
+    console.error('Error fetching chat sessions:', error);
+    res.status(500).json({ error: 'Failed to fetch chat sessions' });
+  }
+});
+
+router.get('/chats/:chatId', async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const session = db.getChatSession(chatId);
+    if (!session) {
+      return res.status(404).json({ error: 'Chat session not found' });
+    }
+    const messages = db.getSessionHistory(chatId, 100);
+    res.json({ session, messages: messages.reverse() });
+  } catch (error) {
+    console.error('Error fetching chat session:', error);
+    res.status(500).json({ error: 'Failed to fetch chat session' });
+  }
+});
+
 export default router;

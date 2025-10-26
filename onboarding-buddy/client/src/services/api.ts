@@ -11,7 +11,11 @@ export const questionAPI = {
   search: (query: string) => 
     api.get(`/questions/search?q=${encodeURIComponent(query)}`),
   provideFeedback: (conversationId: number, helpful: boolean, comment?: string) =>
-    api.post('/questions/feedback', { conversationId, helpful, comment })
+    api.post('/questions/feedback', { conversationId, helpful, comment }),
+  getAllChats: () => 
+    api.get('/questions/chats'),
+  getChat: (chatId: string) => 
+    api.get(`/questions/chats/${chatId}`)
 };
 
 export const guidesAPI = {
