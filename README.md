@@ -14,12 +14,14 @@ A comprehensive onboarding assistant powered by Amp SDK that helps new developer
 ## Tech Stack
 
 ### Backend
+
 - Node.js + Express
 - TypeScript
 - SQLite (better-sqlite3)
 - Amp SDK
 
 ### Frontend
+
 - React 18
 - TypeScript
 - Vite
@@ -65,8 +67,8 @@ Start both server and client:
 npm run dev
 ```
 
-- Server will run on http://localhost:3001
-- Client will run on http://localhost:3000
+- Server will run on <http://localhost:3001>
+- Client will run on <http://localhost:3000>
 
 ### Type Checking
 
@@ -96,7 +98,7 @@ npm run preview
 
 ## Project Structure
 
-```
+```bash
 onboarding-buddy/
 ├── client/                    # React frontend
 │   ├── src/
@@ -141,16 +143,19 @@ onboarding-buddy/
 ## API Endpoints
 
 ### Questions
+
 - `POST /api/questions/ask` - Ask a question
 - `GET /api/questions/search?q=query` - Search questions
 - `POST /api/questions/feedback` - Provide feedback
 
 ### Guides
+
 - `GET /api/guides` - Get all guides
 - `GET /api/guides/:id` - Get guide by ID
 - `POST /api/guides/generate` - Generate new guide
 
 ### Quizzes
+
 - `GET /api/quizzes` - Get all quizzes
 - `GET /api/quizzes/:id` - Get quiz by ID with questions
 - `POST /api/quizzes/generate` - Generate quiz from chat session
