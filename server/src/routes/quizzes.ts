@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { DatabaseService } from '../db/database';
-import { AmpService } from '../services/ampService';
+import { DatabaseService } from '../db/database.js';
+import { AmpService } from '../services/ampService.js';
 import { randomUUID } from 'crypto';
 
 const router = Router();
