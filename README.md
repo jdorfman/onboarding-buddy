@@ -1,4 +1,4 @@
-# Onboarding Buddy Application
+# Onboarding Buddy
 
 A comprehensive onboarding assistant powered by Amp SDK that helps new developers understand codebases through interactive chat and setup guides.
 
@@ -80,7 +80,7 @@ npm run typecheck
 
 ## Production Build
 
-### Backend
+### Backend (Build)
 
 ```bash
 cd server
@@ -88,7 +88,7 @@ npm run build
 npm start
 ```
 
-### Frontend
+### Frontend (Build)
 
 ```bash
 cd client
