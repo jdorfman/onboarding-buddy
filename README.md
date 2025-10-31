@@ -4,11 +4,12 @@ A comprehensive onboarding assistant powered by Amp SDK that helps new developer
 
 ## Features
 
-- Interactive Chat**: Ask questions about the codebase and get AI-powered answers
-- Setup Guides**: Generate and view step-by-step setup guides for various topics
-- Knowledge Base**: Automatically caches Q&A for faster responses
-- Feedback System**: Rate responses to improve future answers
-- Bootstrap UI**: Clean, responsive interface
+- **Interactive Chat**: Ask questions about the codebase and get AI-powered answers
+- **Setup Guides**: Generate and view step-by-step setup guides for various topics
+- **Interactive Quizzes**: Generate and take quizzes from chat conversations to test your knowledge
+- **Knowledge Base**: Automatically caches Q&A for faster responses
+- **Feedback System**: Rate responses to improve future answers
+- **Bootstrap UI**: Clean, responsive interface
 
 ## Tech Stack
 
@@ -67,6 +68,14 @@ npm run dev
 - Server will run on http://localhost:3001
 - Client will run on http://localhost:3000
 
+### Type Checking
+
+Run TypeScript type checks across the entire project:
+
+```bash
+npm run typecheck
+```
+
 ## Production Build
 
 ### Backend
@@ -94,6 +103,8 @@ onboarding-buddy/
 │   │   ├── components/       # React components
 │   │   │   ├── ChatWindow.tsx
 │   │   │   ├── QuestionInput.tsx
+│   │   │   ├── QuizListPage.tsx
+│   │   │   ├── QuizRunner.tsx
 │   │   │   ├── ResponseDisplay.tsx
 │   │   │   └── SetupGuideViewer.tsx
 │   │   ├── services/
@@ -103,7 +114,8 @@ onboarding-buddy/
 │   │   ├── styles/
 │   │   │   └── custom.css    # Custom styles
 │   │   ├── App.tsx
-│   │   └── main.tsx
+│   │   ├── main.tsx
+│   │   └── vite-env.d.ts
 │   ├── index.html
 │   ├── vite.config.ts
 │   ├── tsconfig.json
@@ -115,7 +127,8 @@ onboarding-buddy/
 │   │   │   └── database.ts   # SQLite service
 │   │   ├── routes/
 │   │   │   ├── questions.ts
-│   │   │   └── guides.ts
+│   │   │   ├── guides.ts
+│   │   │   └── quizzes.ts
 │   │   ├── services/
 │   │   │   └── ampService.ts # Amp SDK integration
 │   │   └── server.ts
@@ -137,14 +150,23 @@ onboarding-buddy/
 - `GET /api/guides/:id` - Get guide by ID
 - `POST /api/guides/generate` - Generate new guide
 
+### Quizzes
+- `GET /api/quizzes` - Get all quizzes
+- `GET /api/quizzes/:id` - Get quiz by ID with questions
+- `POST /api/quizzes/generate` - Generate quiz from chat session
+- `POST /api/quizzes/:id/submit` - Submit quiz answers
+
 ## Database Schema
 
 The application uses SQLite with the following tables:
 
 - **qa_pairs**: Q&A knowledge base with categorization and usage tracking
 - **setup_guides**: Step-by-step guides with difficulty levels
+- **chat_sessions**: Chat session management
 - **conversations**: Session history for context-aware responses
 - **feedback**: User feedback for continuous improvement
+- **quizzes**: Generated quizzes linked to chat sessions
+- **quiz_questions**: True/false questions with explanations and guide references
 
 ### Useful Database Queries
 
