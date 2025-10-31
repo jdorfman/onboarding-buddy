@@ -100,38 +100,15 @@ export const ChatWindow: React.FC = () => {
     navigate('/');
   };
 
-  const filteredMessages = useMemo(() => {
-    if (!searchTerm.trim()) return messages;
+  const filteredChatSessions = useMemo(() => {
+    if (!searchTerm.trim()) return chatSessions;
     
     const term = searchTerm.toLowerCase();
-    return messages.filter(msg => 
-      msg.role === 'assistant' && 
-      msg.content.toLowerCase().includes(term)
-    );
-  }, [messages, searchTerm]);
-
-  const conversationPairs = useMemo(() => {
-    const pairs: { question: Message; answer: Message }[] = [];
-    for (let i = 0; i < messages.length; i++) {
-      if (messages[i].role === 'user') {
-        const nextMessage = messages[i + 1];
-        if (nextMessage && nextMessage.role === 'assistant') {
-          pairs.push({ question: messages[i], answer: nextMessage });
-        }
-      }
-    }
-    return pairs.reverse();
-  }, [messages]);
-
-  const displayedPairs = useMemo(() => {
-    if (!searchTerm.trim()) return conversationPairs;
-    
-    const term = searchTerm.toLowerCase();
-    return conversationPairs.filter(pair => 
-      pair.answer.content.toLowerCase().includes(term) ||
-      pair.question.content.toLowerCase().includes(term)
-    );
-  }, [conversationPairs, searchTerm]);
+    return chatSessions.filter(session => {
+      const title = session.title || session.first_question || '';
+      return title.toLowerCase().includes(term);
+    });
+  }, [chatSessions, searchTerm]);
 
   const handleQuestion = async (question: string) => {
     const userMessage: Message = {
@@ -255,8 +232,11 @@ export const ChatWindow: React.FC = () => {
             {chatSessions.length === 0 && (
               <p className="text-muted small">No chats yet</p>
             )}
+            {chatSessions.length > 0 && filteredChatSessions.length === 0 && (
+              <p className="text-muted small">No chats match your search</p>
+            )}
             <div className="list-group">
-              {chatSessions.map((session) => (
+              {filteredChatSessions.map((session) => (
                 <button
                   key={session.id}
                   className={`list-group-item list-group-item-action ${currentSessionId === session.id ? 'active' : ''}`}
@@ -278,30 +258,42 @@ export const ChatWindow: React.FC = () => {
 
         <div className="col-md-9 p-4 d-flex flex-column">
           {messages.length > 0 && (
-            <div className="d-flex justify-content-end mb-3">
-              <div className="btn-group">
-                <button 
-                  className={`btn btn-sm ${isCopied ? 'btn-success' : 'btn-outline-secondary'}`}
-                  onClick={copyToClipboard}
-                  title="Copy page as Markdown"
-                  disabled={isCopied}
-                >
-                  {isCopied ? (
-                    <>
-                      <span className="me-1">✓</span>
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-clipboard me-1" viewBox="0 0 16 16">
-                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
-                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
-                      </svg>
-                      Copy page
-                    </>
-                  )}
-                </button>
-              </div>
+            <div className="d-flex justify-content-end mb-3 gap-2">
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => navigate(`/quiz?fromChat=${currentSessionId}`)}
+                title="Generate quiz from this chat"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-patch-question me-1" viewBox="0 0 16 16">
+                  <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.71 1.71 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                  <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                  <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                </svg>
+                Generate Quiz
+              </button>
+              <button 
+                className={`btn btn-sm ${isCopied ? 'btn-success' : 'btn-outline-secondary'}`}
+                onClick={copyToClipboard}
+                title="Copy page as Markdown"
+                disabled={isCopied}
+              >
+                {isCopied ? (
+                  <>
+                    <span className="me-1">✓</span>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-markdown me-1" viewBox="0 0 16 16">
+                      <path d="M14 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
+                      <path fillRule="evenodd" d="M9.146 8.146a.5.5 0 0 1 .708 0L11.5 9.793l1.646-1.647a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 0-.708"/>
+                      <path fillRule="evenodd" d="M11.5 5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 1 .5-.5"/>
+                      <path d="M3.56 11V7.01h.056l1.428 3.239h.774l1.42-3.24h.056V11h1.073V5.001h-1.2l-1.71 3.894h-.039l-1.71-3.894H2.5V11z"/>
+                    </svg>
+                    Copy page
+                  </>
+                )}
+              </button>
             </div>
           )}
           {messages.length === 0 ? (
@@ -315,14 +307,6 @@ export const ChatWindow: React.FC = () => {
                     onClick={() => handleQuestion('How to set up the development environment')}
                   >
                     • How to set up the development environment
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    className="btn btn-link text-decoration-none p-0"
-                    onClick={() => handleQuestion('Architecture and component structure')}
-                  >
-                    • Architecture and component structure
                   </button>
                 </li>
                 <li>

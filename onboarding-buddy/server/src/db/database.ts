@@ -127,7 +127,7 @@ export class DatabaseService {
 
   getGuideById(id: number): any {
     const stmt = this.db.prepare('SELECT * FROM setup_guides WHERE id = ?');
-    const guide = stmt.get(id);
+    const guide: any = stmt.get(id);
     if (guide) {
       return {
         ...guide,
@@ -146,47 +146,72 @@ export class DatabaseService {
     return result.lastInsertRowid as number;
   }
 
-  getAllArchitectureDocs(): any[] {
-    const stmt = this.db.prepare('SELECT * FROM architecture_docs ORDER BY component_name');
+  getAllQuizzes(): any[] {
+    const stmt = this.db.prepare(`
+      SELECT q.*, 
+        cs.title as chat_title,
+        cs.id as chat_id,
+        (SELECT COUNT(*) FROM quiz_questions WHERE quiz_id = q.id) as question_count
+      FROM quizzes q
+      LEFT JOIN chat_sessions cs ON q.source_chat_id = cs.id
+      ORDER BY q.created_at DESC
+    `);
     return stmt.all();
   }
 
-  getArchitectureByComponent(componentName: string): any {
-    const stmt = this.db.prepare('SELECT * FROM architecture_docs WHERE component_name = ?');
-    const doc = stmt.get(componentName);
-    if (doc) {
-      return {
-        ...doc,
-        dependencies: JSON.parse(doc.dependencies || '[]'),
-        techStack: JSON.parse(doc.tech_stack || '[]'),
-        filePaths: JSON.parse(doc.file_paths || '[]'),
-        codeExamples: JSON.parse(doc.code_examples || '[]')
-      };
-    }
-    return null;
+  getQuizById(id: string): any {
+    const stmt = this.db.prepare('SELECT * FROM quizzes WHERE id = ?');
+    return stmt.get(id);
   }
 
-  insertArchitectureDoc(componentName: string, description: string, dependencies: string[], techStack: string[], filePaths: string[], codeExamples: any[]): number {
-    const stmt = this.db.prepare(`
-      INSERT INTO architecture_docs (component_name, description, dependencies, tech_stack, file_paths, code_examples)
-      VALUES (?, ?, ?, ?, ?, ?)
-      ON CONFLICT(component_name) DO UPDATE SET
-        description = excluded.description,
-        dependencies = excluded.dependencies,
-        tech_stack = excluded.tech_stack,
-        file_paths = excluded.file_paths,
-        code_examples = excluded.code_examples,
-        updated_at = CURRENT_TIMESTAMP
+  getQuizWithQuestions(id: string): any {
+    const quiz = this.getQuizById(id);
+    if (!quiz) return null;
+
+    const questionsStmt = this.db.prepare(`
+      SELECT * FROM quiz_questions 
+      WHERE quiz_id = ? 
+      ORDER BY created_at ASC
     `);
-    const result = stmt.run(
-      componentName,
-      description,
-      JSON.stringify(dependencies),
-      JSON.stringify(techStack),
-      JSON.stringify(filePaths),
-      JSON.stringify(codeExamples)
+    const questions = questionsStmt.all(id) as any[];
+
+    return {
+      ...quiz,
+      questions: questions.map((q: any) => ({
+        ...q,
+        correct_answer: q.correct_answer === 1,
+        guide_refs: q.guide_refs ? JSON.parse(q.guide_refs) : null
+      }))
+    };
+  }
+
+  insertQuiz(id: string, title: string, sourceChatId: string | null): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO quizzes (id, title, source_chat_id)
+      VALUES (?, ?, ?)
+    `);
+    stmt.run(id, title, sourceChatId);
+  }
+
+  insertQuizQuestion(id: string, quizId: string, text: string, correctAnswer: boolean, explanation: string, sourceMessageId: number | null, guideRefs: any[] | null): void {
+    const stmt = this.db.prepare(`
+      INSERT INTO quiz_questions (id, quiz_id, text, correct_answer, explanation, source_message_id, guide_refs)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(
+      id,
+      quizId,
+      text,
+      correctAnswer ? 1 : 0,
+      explanation,
+      sourceMessageId,
+      guideRefs ? JSON.stringify(guideRefs) : null
     );
-    return result.lastInsertRowid as number;
+  }
+
+  deleteQuiz(id: string): void {
+    const stmt = this.db.prepare('DELETE FROM quizzes WHERE id = ?');
+    stmt.run(id);
   }
 
   close(): void {

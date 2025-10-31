@@ -24,8 +24,12 @@ export const guidesAPI = {
   generate: (topic: string) => api.post('/guides/generate', { topic })
 };
 
-export const architectureAPI = {
-  getAll: () => api.get('/architecture'),
-  getComponent: (name: string) => api.get(`/architecture/${name}`),
-  explain: (component: string) => api.post('/architecture/explain', { component })
+export const quizAPI = {
+  getAll: () => api.get('/quizzes'),
+  getById: (id: string) => api.get(`/quizzes/${id}`),
+  generate: (chatId: string, questionCount?: number, title?: string) => 
+    api.post('/quizzes/generate', { chatId, questionCount, title }),
+  grade: (id: string, answers: { questionId: string; selected: boolean }[]) =>
+    api.post(`/quizzes/${id}/grade`, { answers }),
+  delete: (id: string) => api.delete(`/quizzes/${id}`)
 };

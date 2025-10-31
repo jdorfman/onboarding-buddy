@@ -86,9 +86,9 @@ export const SetupGuideViewer: React.FC = () => {
                   navigate(`/guides/${guide.id}`);
                 }}
               >
-                <div className="d-flex w-100 justify-content-between">
+                <div className="d-flex w-100 justify-content-between align-items-center">
                   <h6 className="mb-1">{guide.title}</h6>
-                  <span className={`badge bg-${getDifficultyBadge(guide.difficulty)}`}>
+                  <span className={`badge bg-${getDifficultyBadge(guide.difficulty)} flex-shrink-0`}>
                     {guide.difficulty}
                   </span>
                 </div>
@@ -125,12 +125,13 @@ export const SetupGuideViewer: React.FC = () => {
                   code({ node, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || '');
                     const inline = !match;
+                    const { ref, ...restProps } = props;
                     return !inline ? (
                       <SyntaxHighlighter
-                        style={vscDarkPlus}
+                        style={vscDarkPlus as any}
                         language={match[1]}
                         PreTag="div"
-                        {...props}
+                        {...restProps}
                       >
                         {String(children).replace(/\n$/, '')}
                       </SyntaxHighlighter>

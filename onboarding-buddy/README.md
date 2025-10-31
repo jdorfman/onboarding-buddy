@@ -1,12 +1,11 @@
 # Onboarding Buddy Application
 
-A comprehensive onboarding assistant powered by Amp SDK that helps new developers understand codebases through interactive chat, setup guides, and architecture exploration.
+A comprehensive onboarding assistant powered by Amp SDK that helps new developers understand codebases through interactive chat and setup guides.
 
 ## Features
 
 - Interactive Chat**: Ask questions about the codebase and get AI-powered answers
 - Setup Guides**: Generate and view step-by-step setup guides for various topics
-- Architecture Explorer**: Explore and understand component architecture
 - Knowledge Base**: Automatically caches Q&A for faster responses
 - Feedback System**: Rate responses to improve future answers
 - Bootstrap UI**: Clean, responsive interface
@@ -96,8 +95,7 @@ onboarding-buddy/
 │   │   │   ├── ChatWindow.tsx
 │   │   │   ├── QuestionInput.tsx
 │   │   │   ├── ResponseDisplay.tsx
-│   │   │   ├── SetupGuideViewer.tsx
-│   │   │   └── ArchitectureExplorer.tsx
+│   │   │   └── SetupGuideViewer.tsx
 │   │   ├── services/
 │   │   │   └── api.ts        # API client
 │   │   ├── types/
@@ -117,8 +115,7 @@ onboarding-buddy/
 │   │   │   └── database.ts   # SQLite service
 │   │   ├── routes/
 │   │   │   ├── questions.ts
-│   │   │   ├── guides.ts
-│   │   │   └── architecture.ts
+│   │   │   └── guides.ts
 │   │   ├── services/
 │   │   │   └── ampService.ts # Amp SDK integration
 │   │   └── server.ts
@@ -140,18 +137,12 @@ onboarding-buddy/
 - `GET /api/guides/:id` - Get guide by ID
 - `POST /api/guides/generate` - Generate new guide
 
-### Architecture
-- `GET /api/architecture` - Get all architecture docs
-- `GET /api/architecture/:name` - Get component by name
-- `POST /api/architecture/explain` - Explain a component
-
 ## Database Schema
 
 The application uses SQLite with the following tables:
 
 - **qa_pairs**: Q&A knowledge base with categorization and usage tracking
 - **setup_guides**: Step-by-step guides with difficulty levels
-- **architecture_docs**: Component architecture documentation
 - **conversations**: Session history for context-aware responses
 - **feedback**: User feedback for continuous improvement
 
@@ -189,13 +180,6 @@ sqlite3 server/data/onboarding.db "SELECT topic, difficulty, estimated_minutes F
 2. Enter a topic in the search box
 3. Click the "+" button to generate a new guide
 4. View the guide with prerequisites, difficulty level, and estimated time
-
-### Exploring Architecture
-
-1. Navigate to the Architecture tab
-2. Search for a component to analyze
-3. View dependencies, tech stack, file paths, and code examples
-4. Explore related components
 
 ## Success Metrics
 

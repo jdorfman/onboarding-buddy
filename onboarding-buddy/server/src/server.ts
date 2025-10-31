@@ -6,7 +6,7 @@ import { join } from 'path';
 
 import questionsRouter from './routes/questions';
 import guidesRouter from './routes/guides';
-import architectureRouter from './routes/architecture';
+import quizzesRouter from './routes/quizzes';
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use('/api/questions', questionsRouter);
 app.use('/api/guides', guidesRouter);
-app.use('/api/architecture', architectureRouter);
+app.use('/api/quizzes', quizzesRouter);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

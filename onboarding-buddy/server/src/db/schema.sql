@@ -26,20 +26,6 @@ CREATE TABLE IF NOT EXISTS setup_guides (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Architecture Documentation
-CREATE TABLE IF NOT EXISTS architecture_docs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  component_name TEXT NOT NULL UNIQUE,
-  description TEXT NOT NULL,
-  diagram_url TEXT,
-  dependencies TEXT,
-  tech_stack TEXT,
-  file_paths TEXT,
-  code_examples TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Chat Sessions
 CREATE TABLE IF NOT EXISTS chat_sessions (
   id TEXT PRIMARY KEY,
@@ -70,3 +56,29 @@ CREATE TABLE IF NOT EXISTS feedback (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (conversation_id) REFERENCES conversations(id)
 );
+
+-- Quizzes
+CREATE TABLE IF NOT EXISTS quizzes (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  source_chat_id TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (source_chat_id) REFERENCES chat_sessions(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_quiz_chat ON quizzes(source_chat_id);
+
+-- Quiz Questions
+CREATE TABLE IF NOT EXISTS quiz_questions (
+  id TEXT PRIMARY KEY,
+  quiz_id TEXT NOT NULL,
+  text TEXT NOT NULL,
+  correct_answer INTEGER NOT NULL CHECK (correct_answer IN (0, 1)),
+  explanation TEXT,
+  source_message_id INTEGER,
+  guide_refs TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_question_quiz ON quiz_questions(quiz_id);

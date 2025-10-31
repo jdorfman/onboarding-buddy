@@ -6,7 +6,7 @@ export class AmpService {
   constructor() {
     this.systemPrompt = `You are an expert onboarding assistant helping new developers understand the codebase.
 Your responsibilities:
-- Answer questions about the codebase architecture and components
+- Answer questions about the codebase and components
 - Generate step-by-step setup guides
 - Explain code patterns and best practices
 - Provide context-aware responses based on the actual codebase
@@ -87,62 +87,50 @@ Provide the response in the following JSON format:
     };
   }
 
-  async explainArchitecture(component: string): Promise<{
-    componentName: string;
-    description: string;
-    dependencies: string[];
-    techStack: string[];
-    filePaths: string[];
-    codeExamples: any[];
-  }> {
-    const prompt = `Analyze the architecture of the component: ${component}
+  async searchCodebase(query: string): Promise<string> {
+    const response = await this.executePrompt(`Search the codebase for: ${query}`);
+    return response;
+  }
 
-Provide a comprehensive explanation including:
-- Description of the component's purpose and functionality
-- Dependencies (other components it relies on)
-- Technology stack used
-- Relevant file paths
-- Code examples demonstrating key functionality
+  async generateQuizQuestions(messages: any[], questionCount: number = 5): Promise<any[]> {
+    const messageContext = messages
+      .map((m, idx) => `Message ${idx + 1}:\nQ: ${m.user_question}\nA: ${m.agent_response}`)
+      .join('\n\n');
 
-Return the response in JSON format:
-{
-  "componentName": "${component}",
-  "description": "Detailed description",
-  "dependencies": ["dep1", "dep2"],
-  "techStack": ["tech1", "tech2"],
-  "filePaths": ["path1", "path2"],
-  "codeExamples": [
-    {
-      "language": "typescript",
-      "code": "example code",
-      "description": "What this code does"
-    }
-  ]
-}`;
+    const prompt = `Based on the following conversation messages, generate ${questionCount} true/false quiz questions to test understanding of the content.
+
+${messageContext}
+
+Generate a mix of true and false statements. For each question, provide:
+- text: The statement to evaluate
+- correct_answer: true or false
+- explanation: A brief explanation of why the answer is correct
+- source_message_id: The ID of the message this question is based on (use the message id from the messages provided)
+
+Provide the response as a JSON array:
+[
+  {
+    "text": "Statement here",
+    "correct_answer": true,
+    "explanation": "Explanation here",
+    "source_message_id": 123
+  }
+]
+
+Make the statements clear and focused on key concepts from the conversation.`;
 
     const response = await this.executePrompt(prompt);
     
     try {
-      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      const jsonMatch = response.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        const questions = JSON.parse(jsonMatch[0]);
+        return questions.slice(0, questionCount);
       }
     } catch (error) {
-      console.error('Failed to parse architecture JSON:', error);
+      console.error('Failed to parse quiz questions JSON:', error);
     }
 
-    return {
-      componentName: component,
-      description: response,
-      dependencies: [],
-      techStack: [],
-      filePaths: [],
-      codeExamples: []
-    };
-  }
-
-  async searchCodebase(query: string): Promise<string> {
-    const response = await this.executePrompt(`Search the codebase for: ${query}`);
-    return response;
+    return [];
   }
 }

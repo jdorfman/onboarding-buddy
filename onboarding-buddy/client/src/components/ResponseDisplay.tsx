@@ -30,12 +30,13 @@ export const ResponseDisplay: React.FC<ResponseDisplayProps> = ({ message }) => 
           code({ node, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
             const inline = !match;
+            const { ref, ...restProps } = props;
             return !inline ? (
               <SyntaxHighlighter
-                style={vscDarkPlus}
+                style={vscDarkPlus as any}
                 language={match[1]}
                 PreTag="div"
-                {...props}
+                {...restProps}
               >
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>

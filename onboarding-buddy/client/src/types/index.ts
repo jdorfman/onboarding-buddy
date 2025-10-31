@@ -17,19 +17,3 @@ export interface SetupGuide {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   estimatedTime: string;
 }
-
-export interface ArchitectureComponent {
-  id: number;
-  componentName: string;
-  description: string;
-  dependencies: string[];
-  techStack: string[];
-  filePaths: string[];
-  codeExamples: CodeExample[];
-}
-
-export interface CodeExample {
-  language: string;
-  code: string;
-  description: string;
-}

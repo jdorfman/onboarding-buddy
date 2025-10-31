@@ -17,22 +17,6 @@ export interface SetupGuide {
   estimatedTime: string;
 }
 
-export interface ArchitectureComponent {
-  id: number;
-  componentName: string;
-  description: string;
-  dependencies: string[];
-  techStack: string[];
-  filePaths: string[];
-  codeExamples: CodeExample[];
-}
-
-export interface CodeExample {
-  language: string;
-  code: string;
-  description: string;
-}
-
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
