@@ -2,11 +2,15 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-import questionsRouter from './routes/questions';
-import guidesRouter from './routes/guides';
-import quizzesRouter from './routes/quizzes';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+import questionsRouter from './routes/questions.js';
+import guidesRouter from './routes/guides.js';
+import quizzesRouter from './routes/quizzes.js';
 
 dotenv.config();
 

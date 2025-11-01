@@ -1,4 +1,4 @@
-import { execute, createUserMessage } from '@sourcegraph/amp-sdk';
+import * as Amp from '@sourcegraph/amp-sdk';
 
 export class AmpService {
   private systemPrompt: string;
@@ -26,7 +26,7 @@ Always be helpful, concise, and provide code examples when relevant.`;
   private async executePrompt(prompt: string): Promise<string> {
     let result = '';
     
-    for await (const message of execute({
+    for await (const message of Amp.execute({
       prompt: `${this.systemPrompt}\n\n${prompt}`,
       options: {
         dangerouslyAllowAll: true

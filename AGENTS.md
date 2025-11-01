@@ -10,6 +10,7 @@
 ## Architecture
 
 **Monorepo structure** with three subprojects:
+
 - `client/`: React + Vite frontend (port 3000) with Bootstrap UI
 - `server/`: Node.js + Express API (port 3001) with SQLite database
 - `shared/`: Shared TypeScript types
@@ -26,3 +27,5 @@
 - **Styling**: Bootstrap utility classes (no inline styles), custom CSS in `client/src/styles/`
 - **Error handling**: Try/catch with console.error, user-friendly error messages
 - **API**: Axios with `/api` base URL, proper error handling in services
+- **Emojis**: Never use emojis in code, markdown, or comments
+- **Markdown**: All markdown must pass `markdownlint` validation

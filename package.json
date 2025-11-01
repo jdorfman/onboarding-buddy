@@ -11,6 +11,7 @@
     "typecheck": "cd server && npm run typecheck && cd ../client && npm run typecheck"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "markdownlint": "^0.39.0"
   }
 }
