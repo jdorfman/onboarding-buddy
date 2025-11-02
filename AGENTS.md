@@ -2,7 +2,7 @@
 
 ## Commands
 
-- **Dev**: `npm run dev` (runs both client and server concurrently)
+- **Dev**: `npm run dev` (MUST run in `tmux`)
 - **Build**: `npm run build` (builds server and client)
 - **Typecheck**: `npm run typecheck` (runs TypeScript checks on both projects)
 - **Install**: `npm run install:all` (installs all dependencies)
