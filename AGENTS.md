@@ -2,7 +2,7 @@
 
 ## Commands
 
-- **Dev**: `npm run dev` (MUST run in `tmux`)
+- **Dev**: `npm run dev` (MUST run in `tmux` session-name: `onboarding-buddy`)
 - **Build**: `npm run build` (builds server and client)
 - **Typecheck**: `npm run typecheck` (runs TypeScript checks on both projects)
 - **Install**: `npm run install:all` (installs all dependencies)
