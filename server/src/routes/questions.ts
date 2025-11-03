@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { DatabaseService } from '../db/database.js';
 import { AmpService } from '../services/ampService.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 const db = new DatabaseService();
 const ampService = new AmpService();
 
-router.post('/ask', async (req, res) => {
+router.post('/ask', requireAuth, async (req, res) => {
   try {
     const { question, sessionId } = req.body;
 
@@ -62,7 +63,7 @@ router.get('/search', async (req, res) => {
   }
 });
 
-router.post('/feedback', async (req, res) => {
+router.post('/feedback', requireAuth, async (req, res) => {
   try {
     const { conversationId, helpful, comment } = req.body;
 

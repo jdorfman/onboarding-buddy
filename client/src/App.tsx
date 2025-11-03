@@ -4,6 +4,7 @@ import { ChatWindow } from './components/ChatWindow';
 import { SetupGuideViewer } from './components/SetupGuideViewer';
 import { QuizListPage } from './components/QuizListPage';
 import { QuizRunner } from './components/QuizRunner';
+import { UserMenu } from './components/UserMenu';
 
 function App() {
   return (
@@ -45,6 +46,9 @@ function App() {
                   </NavLink>
                 </li>
               </ul>
+              <div className="ms-auto">
+                <UserMenu />
+              </div>
             </div>
           </div>
         </nav>

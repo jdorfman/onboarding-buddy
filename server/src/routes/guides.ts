@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { DatabaseService } from '../db/database.js';
 import { AmpService } from '../services/ampService.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 const db = new DatabaseService();
@@ -35,7 +36,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/generate', async (req, res) => {
+router.post('/generate', requireAuth, async (req, res) => {
   try {
     const { topic } = req.body;
 
