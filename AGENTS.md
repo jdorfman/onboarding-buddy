@@ -29,3 +29,4 @@
 - **API**: Axios with `/api` base URL, proper error handling in services
 - **Emojis**: Never use emojis in code, markdown, or comments
 - **Markdown**: All markdown must pass `markdownlint` validation
+- **Environment variables**: ALWAYS import dotenv and call `dotenv.config()` as the FIRST lines in server entry files, before any other imports. This ensures env vars are loaded before modules that depend on them are initialized.
