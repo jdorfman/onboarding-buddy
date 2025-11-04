@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { DatabaseService } from '../db/database.js';
 import { AmpService } from '../services/ampService.js';
 import { randomUUID } from 'crypto';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 const db = new DatabaseService();
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/generate', async (req, res) => {
+router.post('/generate', requireAuth, async (req, res) => {
   try {
     const { chatId, questionCount = 5, title } = req.body;
 
@@ -124,7 +125,7 @@ router.post('/:id/grade', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     db.deleteQuiz(id);
